@@ -1,0 +1,83 @@
+@import '../../assets/scss/styles.scss';
+
+section {
+    background-color: $bg-color;
+}
+
+.transactions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transaction {
+    flex: 1;
+    background-color: $white;
+    width: 100%;
+    max-width: 300px;
+    margin: -40px auto 0;
+    padding: 20px 30px;
+    border-radius: 5px;
+    box-shadow: 0px 8px 8px rgba(0,0,0,0.2);
+
+    &:nth-child(3) {
+        background-color: $green-light;
+
+        .title {
+            h1 {
+                color: $white;
+            }
+        }
+
+        h2 {
+            color: $white;
+        }
+    }
+
+    .title {
+        display: flex;
+        justify-content: space-between;
+
+        h1 {
+            font-size: 16px;
+            font-weight: 400;
+        }
+    }
+
+    h2 {
+        margin-top: 16px;
+        font-size: 36px;
+    }
+}
+
+.newTransaction {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 0; 
+
+    button {
+        width: 100%;
+        max-width: 300px;
+        padding: 10px 30px;
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        color: $color-title;
+        background-color: $white;
+        border: 0;
+        font-weight: 600;
+        box-shadow: 0px 8px 8px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: opacity .2s ease-in-out;
+
+        &:hover {
+            opacity: 0.8;
+        }
+
+        img {
+            margin-left: 16px;
+        }
+    }
+}
