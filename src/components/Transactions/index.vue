@@ -34,7 +34,9 @@
             <button class="btn">Adicionar Transação <img :src="newTransaction" alt="Nova Transação"></button>
         </div>
 
-        
+        <div class="allTransactions">
+            
+        </div>
     </section>
 </template>
 

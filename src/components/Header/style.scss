@@ -4,7 +4,17 @@
 header {
     background-color: $green-dark;
     width: 100%;
+    padding: 30px 0 15%;
+
+    @include respond-to-max(576) {
+        padding: 30px 0 30%;
+    }
+}
+
+.logo {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     justify-content: center;
-    padding: 30px 0 15%;
 }
