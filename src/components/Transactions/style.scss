@@ -5,7 +5,21 @@ section {
     width: 100%;
 }
 
-.transactions {
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Balance CSS Style */
+
+#balance {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
@@ -19,7 +33,7 @@ section {
     }
 }
 
-.transaction {
+.card {
     background-color: $white;
     width: 30%;
     max-width: 400px;
@@ -76,7 +90,9 @@ section {
     }
 }
 
-.newTransaction {
+/* New Transaction Button CSS Style */
+
+#newTransaction {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
@@ -113,7 +129,7 @@ section {
         }
 
         @include respond-to-max(768) {
-            width: 100%;
+            width: 90%;
         }
 
         &:hover {
@@ -122,6 +138,185 @@ section {
 
         img {
             margin-left: 16px;
+        }
+    }
+}
+
+/* Transactions CSS Style */
+
+#allTransactions {
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px 2% 40px;
+    margin: 0 auto;
+    display: block;
+    overflow-x: auto;
+}
+
+#data-table {
+    width: 100%;
+    border-spacing: 0rem 0.5rem;
+    color: #969cb3;
+
+    thead {
+        tr {
+            & th:first-child {
+                border-radius: 5px 0 0 5px;
+            }
+
+            & th:last-child {
+                border-radius: 0 5px 5px 0;
+            }
+
+        }
+    }
+
+    tbody {
+        tr {
+            opacity: 0.7;
+            transition: opacity .2s ease-in-out;
+    
+            &:hover {
+                opacity: 1;
+            }
+
+            & td:first-child {
+                border-radius: 5px 0 0 5px;
+            }
+
+            & td:last-child {
+                border-radius: 0 5px 5px 0;
+            }
+        }
+    }
+
+    th {
+        background-color: $white;
+
+        font-weight: 400;
+        padding: 1rem 2rem;
+        text-align: left;
+    }
+
+    td {
+        background-color: $white;
+        padding: 1rem 2rem;
+
+        &.description {
+            color: $color-title;
+        }
+
+        &.income {
+            color: #12a454;
+        }
+
+        &.expense {
+            color: #e92929;
+        }
+
+        &.date {
+            color: $color-title;
+        }
+    }
+}
+
+/* Modal CSS Style */
+
+#modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    padding: 0 2%;
+    background-color: rgba(0,0,0,0.3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    @include respond-to-max(768) {
+        align-items: flex-start;
+        padding: 100px 2% 0;
+    }
+
+    &.activeModal {
+        display: flex;
+    }
+
+    .modal {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: $white;
+        padding: 40px;
+    }
+
+    .input-group {
+        width: 100%;
+        margin-top: 16px;
+
+        input {
+            width: 100%;
+            padding: 10px 16px;
+        }
+
+        small {
+            font-size: 14px;
+            color: $color-text;
+            font-weight: 400;
+
+            @include respond-to-max(576) {
+                font-size: 12px;
+            }
+        }
+    }
+
+    .button-group {
+        width: 100%;
+        margin-top: 30px;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        @include respond-to-max(576) {
+            flex-direction: column;
+        }
+
+        .cancel {
+            width: 48%;
+            background-color: transparent;
+            border: 1px solid #e92929;
+            padding: 10px 16px;
+            color: #e92929;
+            display: flex;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+
+            @include respond-to-max(576) {
+                width: 100%;
+                margin-bottom: 16px;
+            }
+        }
+
+        .btn {
+            width: 48%;
+            background-color: #12a454;
+            border: 1px solid #12a454;
+            padding: 10px 16px;
+            color: $white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: opacity 0.2s ease-in-out;
+
+            @include respond-to-max(576) {
+                width: 100%;
+            }
+
+            &:hover {
+                opacity: 0.8;
+            }
         }
     }
 }
