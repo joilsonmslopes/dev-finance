@@ -48,32 +48,15 @@
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td class="description">Luz</td>
-                        <td class="expense">- R$ 500,00</td>
-                        <td class="date">23/08/21</td>
+                    <tr v-for="transaction in transactions" :key="transaction.id">
+                        <td class="description">{{ transaction.description }}</td>
+                        <td :class="isIncome(transaction.amount)">R$ {{ transaction.amount }}</td>
+                        <td class="date">{{ transaction.date }}</td>
                         <td>
                             <img :src="removeImg" alt="Remover Transação">
                         </td>
                     </tr>
 
-                    <tr>
-                        <td class="description">Criação Website</td>
-                        <td class="income">R$ 5.000,00</td>
-                        <td class="date">23/08/21</td>
-                        <td>
-                            <img :src="removeImg" alt="Remover Transação">
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="description">Internet</td>
-                        <td class="expense">- R$ 200,00</td>
-                        <td class="date">23/08/21</td>
-                        <td>
-                            <img :src="removeImg" alt="Remover Transação">
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -112,6 +95,8 @@ import totalImg from '../../assets/images/total.svg';
 import newTransaction from '../../assets/images/plus.svg';
 import removeImg from '../../assets/images/minus-circle.svg';
 
+import api from '../../services/api.js';
+
 export default {
     name: 'Transactions',
     data() {
@@ -121,16 +106,26 @@ export default {
             totalImg,
             newTransaction,
             removeImg,
-            activeModal: false
+            activeModal: false,
+            transactions: [],
+            transactionType: 'income'
         }
+    },
+    mounted() {
+        api.get('/transactions').then( response => {
+            this.transactions = response.data;
+        })
     },
     methods: {
         openModal() {
         this.activeModal = true
-    },
-    closeModal() {
-        this.activeModal = false
-    }
+        },
+        closeModal() {
+            this.activeModal = false
+        },
+        isIncome(value) {
+            return value < 0 ? value = 'expense' : 'income';
+        }
     }
 }
 </script>
