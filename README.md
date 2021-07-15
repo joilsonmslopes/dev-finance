@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img alt="devfinance" height="20" title="devfinance" src="./src/assets/images/logo.svg" />
+  <img alt="devfinance" height="30" title="devfinance" src="./src/assets/images/logo-readme.png" />
 </h1>
 
 ![cover](./src/assets/images/screenshot.png)
