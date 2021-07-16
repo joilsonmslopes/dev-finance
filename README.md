@@ -13,12 +13,14 @@ Dev Finance é uma aplicação de controle financeiro onde o usuário pode adici
 ## Features
 
  - Adicionar novas transações
+ - Listar todas transações
  - Remover transações
 
 
  ## Tecnologias
 - VueJs
 - Sass
+- Axios
 
 ## Executando o projeto
 
