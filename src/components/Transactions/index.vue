@@ -151,21 +151,21 @@ export default {
 
         },
         async filteredTransactions() {
-            const filteredLists = await this.listAll();
+            const allItems = await this.listAll();
 
-            for(let filtered of filteredLists) {
-                if(filtered.amount < 0) {
-                    this.expenses.push(filtered.amount);
-                } else if (filtered.amount >= 0) {
-                    this.incomes.push(filtered.amount);
+            for(let item of allItems) {
+                if(item.amount < 0) {
+                    this.expenses.push(item.amount);
+                } else if (item.amount >= 0) {
+                    this.incomes.push(item.amount);
                 }
             }
 
             this.clearBalance();
 
             const absolutValue = this.expenses.map(expense => Math.abs(expense));
-            const totalExpenses = absolutValue.reduce((acc, currentValue) => {
-                return acc + currentValue
+            const totalExpenses = absolutValue.reduce((totalExpenses, currentValue) => {
+                return totalExpenses + currentValue
                 });
             this.totalExpense = totalExpenses.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
 
