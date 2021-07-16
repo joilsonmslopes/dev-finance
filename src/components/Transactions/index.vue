@@ -8,7 +8,7 @@
                     <img :src="incomesImg" alt="Entradas">
                 </div>
                 <h2>
-                    R$ 17.400,00
+                    {{ totalIncome }}
                 </h2>
             </div>
             <div class="card">
@@ -17,7 +17,7 @@
                     <img :src="expenseImg" alt="Saídas">
                 </div>
                 <h2>
-                    R$ 1.259,00
+                    {{ totalExpense }}
                 </h2>
             </div>
             <div class="card">
@@ -26,13 +26,13 @@
                     <img :src="totalImg" alt="Total">
                 </div>
                 <h2>
-                    R$ 16.141,00
+                    {{ totalBalance }}
                 </h2>
             </div>
         </div>
 
         <div id="newTransaction">
-            <button @click="openModal" class="btn">Adicionar Transação <img :src="newTransaction" alt="Nova Transação"></button>
+            <button @click="openModal" class="btn">Adicionar Transação <img :src="newTransactionBtn" alt="Nova Transação"></button>
         </div>
 
         <div id="allTransactions">
@@ -53,7 +53,7 @@
                         <td :class="isIncome(transaction.amount)">R$ {{ transaction.amount }}</td>
                         <td class="date">{{ transaction.date }}</td>
                         <td>
-                            <img :src="removeImg" alt="Remover Transação">
+                            <img :src="removeImg" alt="Remover Transação" @click="deleteTransaction(transaction, transaction.id)">
                         </td>
                     </tr>
 
@@ -61,26 +61,26 @@
             </table>
         </div>
 
-        <section id="modalOverlay" :class="{activeModal}" @click="closeModal">
+        <section id="modalOverlay" :class="{activeModal}" >
             <div class="modal">
                 <h2>Nova Trasação</h2>
-                <form action="">
+                <form @submit.prevent="saveTransaction">
                     <div class="input-group">
                         <label for="description" class="sr-only">Descrição</label>
-                        <input type="text" name="description" id="description" placeholder="Descrição">
+                        <input type="text" name="description" id="description" placeholder="Descrição" v-model="addTransaction.description">
                     </div>
                     <div class="input-group">
-                        <label for="amount" class="sr-only">Descrição</label>
-                        <input type="text" name="amount" id="amount" placeholder="0,00">
+                        <label for="amount" class="sr-only">Valor</label>
+                        <input type="text" name="amount" id="amount" placeholder="0,00" v-model="addTransaction.amount">
                         <small>Use o sinal - (negativo) para despesas e , (vírgula) para casas decimais</small>
                     </div>
                     <div class="input-group">
-                        <label for="date" class="sr-only">Descrição</label>
-                        <input type="text" name="date" id="date" placeholder="dd/mm/yyyy">
+                        <label for="date" class="sr-only">Data</label>
+                        <input type="text" name="date" id="date" placeholder="dd/mm/yyyy" v-model="addTransaction.date">
                     </div>
                     <div class="button-group">
-                        <button type="button" :class="['cancel', {activeModal: closeModal}]">Cancelar</button>
-                        <button class="btn" type="submit">Salvar</button>
+                        <button type="button" class="cancel" @click="closeModal">Cancelar</button>
+                        <button class="btn" type="submit" @click="closeModal">Salvar</button>
                     </div>
                 </form>
             </div>
@@ -92,10 +92,11 @@
 import incomesImg from '../../assets/images/incomes.svg';
 import expenseImg from '../../assets/images/expense.svg';
 import totalImg from '../../assets/images/total.svg';
-import newTransaction from '../../assets/images/plus.svg';
+import newTransactionBtn from '../../assets/images/plus.svg';
 import removeImg from '../../assets/images/minus-circle.svg';
 
-import api from '../../services/api.js';
+import TransactionApi from '../../services/transactions';
+import Api from '../../services/api';
 
 export default {
     name: 'Transactions',
@@ -104,17 +105,27 @@ export default {
             incomesImg,
             expenseImg,
             totalImg,
-            newTransaction,
+            newTransactionBtn,
             removeImg,
             activeModal: false,
             transactions: [],
-            transactionType: 'income'
+            addTransaction: {
+                description: '',
+                amount: '',
+                date: ''
+            },
+            transactionType: 'income',
+            incomes: [],
+            expenses: [],
+            totalIncome: 0,
+            totalExpense: 0,
+            totalBalance: 0,
+            errors: []
         }
     },
     mounted() {
-        api.get('/transactions').then( response => {
-            this.transactions = response.data;
-        })
+        this.listAll();
+        this.filteredTransactions();
     },
     methods: {
         openModal() {
@@ -124,7 +135,55 @@ export default {
             this.activeModal = false
         },
         isIncome(value) {
-            return value < 0 ? value = 'expense' : 'income';
+            return value > 0 ? value = 'income' : 'expense';
+        },
+        async listAll() {
+            const value = await TransactionApi.listar();
+            this.transactions = value.data;
+
+            return this.transactions;
+
+        },
+        async filteredTransactions() {
+            const filteredLists = await this.listAll();
+
+            for(let filtered of filteredLists) {
+                if(filtered.amount < 0) {
+                    this.expenses.push(filtered.amount);
+                } else if (filtered.amount >= 0) {
+                    this.incomes.push(filtered.amount);
+                }
+            }
+
+            const absolutValue = this.expenses.map(expense => Math.abs(expense));
+            const totalExpenses = absolutValue.reduce((acc, currentValue) => {
+                return acc + currentValue
+                });
+            this.totalExpense = totalExpenses.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+
+            const totalIncomes = this.incomes.reduce((totalIncomes, currentValue) => totalIncomes + currentValue);
+            this.totalIncome = totalIncomes.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+
+            const balance = totalIncomes - totalExpenses;
+            this.totalBalance = balance.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+
+
+        },
+        saveTransaction() {
+            TransactionApi.salvar(this.addTransaction).then(response => {
+                const amountValue = response.data.amount;
+                this.addTransaction.description = response.data.description;
+                this.addTransaction.amount = parseFloat(amountValue, 10).toFixed(2);
+                this.addTransaction.date = response.data.date;
+
+                this.addTransaction = {}
+                this.filteredTransactions();
+            })
+        },
+        async deleteTransaction(transaction) {
+            await Api.delete('http://localhost:3000/transactions/' + transaction.id);
+
+            this.listAll();
         }
     }
 }
