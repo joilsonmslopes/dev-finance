@@ -125,6 +125,7 @@ export default {
     },
     mounted() {
         this.listAll();
+        this.clearBalance();
         this.filteredTransactions();
     },
     methods: {
@@ -136,6 +137,11 @@ export default {
         },
         isIncome(value) {
             return value > 0 ? value = 'income' : 'expense';
+        },
+        clearBalance() {
+            this.totalIncome = 0;
+            this.totalExpense = 0;
+            this.totalBalance = 0;
         },
         async listAll() {
             const value = await TransactionApi.listar();
@@ -155,6 +161,8 @@ export default {
                 }
             }
 
+            this.clearBalance();
+
             const absolutValue = this.expenses.map(expense => Math.abs(expense));
             const totalExpenses = absolutValue.reduce((acc, currentValue) => {
                 return acc + currentValue
@@ -167,18 +175,11 @@ export default {
             const balance = totalIncomes - totalExpenses;
             this.totalBalance = balance.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
 
-
         },
-        saveTransaction() {
-            TransactionApi.salvar(this.addTransaction).then(response => {
-                const amountValue = response.data.amount;
-                this.addTransaction.description = response.data.description;
-                this.addTransaction.amount = parseFloat(amountValue, 10).toFixed(2);
-                this.addTransaction.date = response.data.date;
+        async saveTransaction() {
+            await Api.post('transactions', this.addTransaction);
 
-                this.addTransaction = {}
-                this.filteredTransactions();
-            })
+            this.listAll();
         },
         async deleteTransaction(transaction) {
             await Api.delete('http://localhost:3000/transactions/' + transaction.id);
