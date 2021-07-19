@@ -37,6 +37,7 @@
 
         <div id="allTransactions">
             <h2 class="sr-only">Transações</h2>
+
             <table id="data-table">
                 <thead>
                     <tr>
@@ -148,36 +149,51 @@ export default {
             this.transactions = value.data;
 
             return this.transactions;
-
         },
         async filteredTransactions() {
             const allItems = await this.listAll();
 
             for(let item of allItems) {
                 if(item.amount < 0) {
-                    this.expenses.push(item.amount);
+                    this.$set(this.expenses, this.expenses.length, item.amount)
                 } else if (item.amount >= 0) {
-                    this.incomes.push(item.amount);
+                    this.$set(this.incomes, this.incomes.length, item.amount)
                 }
             }
-
-            this.clearBalance();
-
+            
             const absolutValue = this.expenses.map(expense => Math.abs(expense));
-            const totalExpenses = absolutValue.reduce((totalExpenses, currentValue) => {
+            this.totalExpense = absolutValue.reduce((totalExpenses, currentValue) => {
                 return totalExpenses + currentValue
                 });
-            this.totalExpense = totalExpenses.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
 
-            const totalIncomes = this.incomes.reduce((totalIncomes, currentValue) => totalIncomes + currentValue);
-            this.totalIncome = totalIncomes.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+            this.totalIncome = this.incomes.reduce((totalIncomes, currentValue) => {
+                console.log(totalIncomes, currentValue)
+                return totalIncomes + currentValue
+            });
 
-            const balance = totalIncomes - totalExpenses;
-            this.totalBalance = balance.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
-
+            this.totalBalance = this.totalIncome - this.totalExpense;            
         },
+        // async getIncomes() {
+        //     const allItems = await this.listAll();
+
+        //     for(let item of allItems) {
+        //         if(item.amount < 0) {
+        //             this.$set(this.expenses, this.expenses.length, item.amount)
+        //         }
+        //     }
+
+        //     this.expenses.reduce((totalExpense, currentValue) => {
+        //         return totalExpense + currentValue;
+        //     }, 0)
+        // },
         async saveTransaction() {
-            await Api.post('transactions', this.addTransaction);
+            const amountValue = parseFloat(this.addTransaction.amount);
+
+            await Api.post('transactions', {
+                description: this.addTransaction.description,
+                amount: amountValue,
+                date: this.addTransaction.date
+            });
 
             this.listAll();
         },
