@@ -151,27 +151,26 @@ export default {
             return this.transactions;
         },
         async filteredTransactions() {
-            const allItems = await this.listAll();
+            const allTransactions = await this.listAll();
+            const transactions = [...allTransactions];
 
-            for(let item of allItems) {
-                if(item.amount < 0) {
-                    this.$set(this.expenses, this.expenses.length, item.amount)
-                } else if (item.amount >= 0) {
-                    this.$set(this.incomes, this.incomes.length, item.amount)
+            for(let transaction of transactions) {
+                if(transaction.amount < 0) {
+                    this.$set(this.expenses, this.expenses.length, transaction.amount)
+                } else if (transaction.amount >= 0) {
+                    this.$set(this.incomes, this.incomes.length, transaction.amount)
                 }
             }
             
-            const absolutValue = this.expenses.map(expense => Math.abs(expense));
-            this.totalExpense = absolutValue.reduce((totalExpenses, currentValue) => {
+            this.totalExpense = this.expenses.reduce((totalExpenses, currentValue) => {
                 return totalExpenses + currentValue
                 });
 
             this.totalIncome = this.incomes.reduce((totalIncomes, currentValue) => {
-                console.log(totalIncomes, currentValue)
                 return totalIncomes + currentValue
             });
 
-            this.totalBalance = this.totalIncome - this.totalExpense;            
+            return this.totalBalance = this.totalIncome - this.totalExpense;            
         },
         // async getIncomes() {
         //     const allItems = await this.listAll();
